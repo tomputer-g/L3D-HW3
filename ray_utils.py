@@ -88,9 +88,11 @@ def sample_images_at_xy(
 def get_pixels_from_image(image_size, camera):
     W, H = image_size[0], image_size[1]
 
+    #256, 256
+
     # TODO (Q1.3): Generate pixel coordinates from [0, W] in x and [0, H] in y
-    X = torch.arange(0, W+1).to(camera.device)
-    Y = torch.arange(0, H+1).to(camera.device)
+    X = torch.arange(0, W).to(camera.device)
+    Y = torch.arange(0, H).to(camera.device)
 
     # TODO (Q1.3): Convert to the range [-1, 1] in both x and y
     x = (X - W/2) / (W/2)
@@ -122,6 +124,7 @@ def get_random_pixels_from_image(n_pixels, image_size, camera):
 # Get rays from pixel values
 def get_rays_from_pixels(xy_grid, image_size, camera):
     W, H = image_size[0], image_size[1]
+    #xy_grid: N,2 (N = W*H = 65536 for 256x256)
 
     #xy_grid is from get_pixels_from_image
     # TODO (Q1.3): Map pixels to points on the image plane at Z=1

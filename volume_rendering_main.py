@@ -98,11 +98,13 @@ def render_images(
 
         # TODO (Q1.3): Visualize xy grid using vis_grid
         if cam_idx == 0 and file_prefix == '':
-            vis_grid(xy_grid, image_size)
+            grid_img = vis_grid(xy_grid, image_size).astype(np.float32)
+            plt.imsave("outputs/xy_grid.png", grid_img)
 
         # TODO (Q1.3): Visualize rays using vis_rays
         if cam_idx == 0 and file_prefix == '':
-            vis_rays(ray_bundle, image_size)
+            rays_img = vis_rays(ray_bundle, image_size).astype(np.float32)
+            plt.imsave("outputs/rays.png", rays_img)
         
         # TODO (Q1.4): Implement point sampling along rays in sampler.py
         pass
