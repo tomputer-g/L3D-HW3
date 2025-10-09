@@ -80,6 +80,8 @@ def render_points(filename, points, image_size=256, color=[0.7, 0.7, 1], device=
     # Get the renderer.
     points_renderer = get_points_renderer(image_size=256,radius=0.01)
 
+    print(points[0, :10,:])
+
     # Get the vertices, faces, and textures.
     # vertices, faces = load_cow_mesh(cow_path)
     # vertices = vertices.unsqueeze(0)  # (N_v, 3) -> (1, N_v, 3)
