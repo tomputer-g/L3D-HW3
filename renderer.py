@@ -23,9 +23,24 @@ class VolumeRenderer(torch.nn.Module):
         eps: float = 1e-10
     ):
         # TODO (1.5): Compute transmittance using the equation described in the README
-        pass
 
+        #1, 2097152, 1
+        print("Deltas: " + str(deltas.shape))   
+        print("Rays Density: " + str(rays_density.shape)) 
+
+
+        # Transmittance(x, xti) = Transmittance(x, xti-1) * exp (-sigma_ti-1 * dt)
+        T = torch.exp(-torch.cumsum(rays_density * deltas, dim=-2))
+        T = torch.roll(T, 1, dims=-2)
+        T[:, 0, :] = 1.0
+
+        # cumprod?
         # TODO (1.5): Compute weight used for rendering from transmittance and alpha
+
+        weights = T * (1 - torch.exp(-rays_density * deltas))
+        #???
+
+        # returns 1, 2097152, 1
         return weights
     
     def _aggregate(
@@ -33,8 +48,12 @@ class VolumeRenderer(torch.nn.Module):
         weights: torch.Tensor,
         rays_feature: torch.Tensor
     ):
+        print("Weights:" + str(weights.shape))
+        print("Rays feature: "+ str(rays_feature.shape))
         # TODO (1.5): Aggregate (weighted sum of) features using weights
-        pass
+        feature = torch.sum(weights * rays_feature, dim=1)
+        assert feature.shape == (65536, 3)
+        # feature = torch.cumsum(weights * rays_feature, dim=-2)
 
         return feature
 
@@ -78,11 +97,18 @@ class VolumeRenderer(torch.nn.Module):
             ) 
 
             # TODO (1.5): Render (color) features using weights
-            pass
+            feature = self._aggregate(weights, feature.view(-1, n_pts, 3))
+
+            print("Output feature: " + str(feature.shape))
 
             # TODO (1.5): Render depth map
-            pass
+            depth = feature[:,0]
+            # depth = self._aggregate(weights, depth_values)
+            # depth = depth / depth.max()
 
+            # print("Depth feature: " + str(depth.shape))
+
+            #256*256*3 feautre (once viewed). We are over by 32x
             # Return
             cur_out = {
                 'feature': feature,
