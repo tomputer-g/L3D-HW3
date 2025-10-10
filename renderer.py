@@ -49,7 +49,7 @@ class VolumeRenderer(torch.nn.Module):
         # print("Rays feature: "+ str(rays_feature.shape))
         # TODO (1.5): Aggregate (weighted sum of) features using weights
         feature = torch.sum(weights * rays_feature, dim=1)
-        assert feature.shape == (65536, rays_feature.shape[2])
+        assert feature.shape == (rays_feature.shape[0], rays_feature.shape[2])
 
         return feature
 
@@ -95,12 +95,12 @@ class VolumeRenderer(torch.nn.Module):
 
             # TODO (1.5): Render (color) features using weights
             feature = self._aggregate(weights, feature.view(-1, n_pts, 3))
-            print("Output feature: " + str(feature.shape))
+            # print("Output feature: " + str(feature.shape))
 
             # TODO (1.5): Render depth map
             # depth = depth_values
             depth = self._aggregate(weights, depth_values.view(-1, n_pts, 1))
-            print("Depth feature: " + str(depth.shape))
+            # print("Depth feature: " + str(depth.shape))
 
             # Return
             cur_out = {
