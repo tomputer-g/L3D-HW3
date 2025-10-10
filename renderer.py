@@ -33,7 +33,7 @@ class VolumeRenderer(torch.nn.Module):
         T = torch.exp(-torch.cumsum(rays_density * deltas, dim=-2))
         T = torch.roll(T, 1, dims=-2)
         T[:, 0, :] = 1.0
-
+        # print(T.max()) #nan
         # cumprod?
         # TODO (1.5): Compute weight used for rendering from transmittance and alpha
 
@@ -75,11 +75,12 @@ class VolumeRenderer(torch.nn.Module):
             cur_ray_bundle = sampler(cur_ray_bundle)
             n_pts = cur_ray_bundle.sample_shape[1]
 
+            print("Ray Bundle input to sampler: " + str(cur_ray_bundle.sample_points.shape))
             # Call implicit function with sample points
             implicit_output = implicit_fn(cur_ray_bundle)
             density = implicit_output['density']
             feature = implicit_output['feature']
-
+            print("sample lengths: " + str(cur_ray_bundle.sample_lengths.shape))
             # Compute length of each ray segment
             depth_values = cur_ray_bundle.sample_lengths[..., 0]
             deltas = torch.cat(
@@ -98,17 +99,13 @@ class VolumeRenderer(torch.nn.Module):
 
             # TODO (1.5): Render (color) features using weights
             feature = self._aggregate(weights, feature.view(-1, n_pts, 3))
-
-            print("Output feature: " + str(feature.shape))
+            # print("Output feature: " + str(feature.shape))
 
             # TODO (1.5): Render depth map
             depth = feature[:,0]
             # depth = self._aggregate(weights, depth_values)
-            # depth = depth / depth.max()
-
             # print("Depth feature: " + str(depth.shape))
 
-            #256*256*3 feautre (once viewed). We are over by 32x
             # Return
             cur_out = {
                 'feature': feature,
