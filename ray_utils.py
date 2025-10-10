@@ -115,7 +115,7 @@ def get_random_pixels_from_image(n_pixels, image_size, camera):
     xy_grid = get_pixels_from_image(image_size, camera)
     # (W*H, 2)
     # TODO (Q2.1): Random subsampling of pixel coordinaters
-    xy_grid_sub = xy_grid[torch.randperm(xy_grid.shape[0])[:]]
+    xy_grid_sub = xy_grid[torch.randperm(xy_grid.shape[0])]
 
 
     # Return
@@ -143,14 +143,12 @@ def get_rays_from_pixels(xy_grid, image_size, camera):
     world_space_points = camera.unproject_points(ndc_points, world_coordinates=True, from_ndc=True)
 
     # TODO (Q1.3): Get ray origins from camera center
-    rays_o = camera.get_camera_center() #N,3
-
-    # print(rays_o.shape) #1,3
+    rays_o = camera.get_camera_center().repeat(world_space_points.shape[0],1)
 
     # TODO (Q1.3): Get ray directions as image_plane_points - rays_o
-    rays_d = world_space_points - rays_o.squeeze(0)
+    rays_d = world_space_points - rays_o
     rays_d = F.normalize(rays_d, dim=-1)
-    rays_d = rays_d.unsqueeze(0)
+    # rays_d = rays_d.unsqueeze(0)
     
     # print(rays_d.shape) #1, 65536, 3
 
