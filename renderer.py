@@ -24,9 +24,8 @@ class VolumeRenderer(torch.nn.Module):
     ):
         # TODO (1.5): Compute transmittance using the equation described in the README
 
-        #1, 2097152, 1
-        print("Deltas: " + str(deltas.shape))   
-        print("Rays Density: " + str(rays_density.shape)) 
+        # print("Deltas: " + str(deltas.shape))   
+        # print("Rays Density: " + str(rays_density.shape)) 
 
 
         # Transmittance(x, xti) = Transmittance(x, xti-1) * exp (-sigma_ti-1 * dt)
@@ -38,9 +37,7 @@ class VolumeRenderer(torch.nn.Module):
         # TODO (1.5): Compute weight used for rendering from transmittance and alpha
 
         weights = T * (1 - torch.exp(-rays_density * deltas))
-        #???
 
-        # returns 1, 2097152, 1
         return weights
     
     def _aggregate(
@@ -48,12 +45,11 @@ class VolumeRenderer(torch.nn.Module):
         weights: torch.Tensor,
         rays_feature: torch.Tensor
     ):
-        print("Weights:" + str(weights.shape))
-        print("Rays feature: "+ str(rays_feature.shape))
+        # print("Weights:" + str(weights.shape))
+        # print("Rays feature: "+ str(rays_feature.shape))
         # TODO (1.5): Aggregate (weighted sum of) features using weights
         feature = torch.sum(weights * rays_feature, dim=1)
-        assert feature.shape == (65536, 3)
-        # feature = torch.cumsum(weights * rays_feature, dim=-2)
+        assert feature.shape == (65536, rays_feature.shape[2])
 
         return feature
 
@@ -75,12 +71,12 @@ class VolumeRenderer(torch.nn.Module):
             cur_ray_bundle = sampler(cur_ray_bundle)
             n_pts = cur_ray_bundle.sample_shape[1]
 
-            print("Ray Bundle input to sampler: " + str(cur_ray_bundle.sample_points.shape))
+            # print("Ray Bundle input to sampler: " + str(cur_ray_bundle.sample_points.shape))
             # Call implicit function with sample points
             implicit_output = implicit_fn(cur_ray_bundle)
             density = implicit_output['density']
             feature = implicit_output['feature']
-            print("sample lengths: " + str(cur_ray_bundle.sample_lengths.shape))
+            # print("sample lengths: " + str(cur_ray_bundle.sample_lengths.shape))
             # Compute length of each ray segment
             depth_values = cur_ray_bundle.sample_lengths[..., 0]
             deltas = torch.cat(
@@ -99,12 +95,12 @@ class VolumeRenderer(torch.nn.Module):
 
             # TODO (1.5): Render (color) features using weights
             feature = self._aggregate(weights, feature.view(-1, n_pts, 3))
-            # print("Output feature: " + str(feature.shape))
+            print("Output feature: " + str(feature.shape))
 
             # TODO (1.5): Render depth map
-            depth = feature[:,0]
-            # depth = self._aggregate(weights, depth_values)
-            # print("Depth feature: " + str(depth.shape))
+            # depth = depth_values
+            depth = self._aggregate(weights, depth_values.view(-1, n_pts, 1))
+            print("Depth feature: " + str(depth.shape))
 
             # Return
             cur_out = {
