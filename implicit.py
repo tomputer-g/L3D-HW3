@@ -326,9 +326,15 @@ class NeuralRadianceField(torch.nn.Module):
         )
 
         # Output density. Also, concatenate and forward
-        self.vol_density_activation = torch.nn.ReLU(inplace=True)
+        self.vol_output = [
+            torch.nn.Linear(256, 1),
+            torch.nn.ReLU(inplace=True)
+        ]
+        self.vol_output = torch.nn.Sequential(*self.vol_output)
         self.final_block = [
             torch.nn.Linear(embedding_dim_dir+256, 128),
+            torch.nn.ReLU(), #TODO not same as official
+            torch.nn.Linear(128, 3),
             torch.nn.Sigmoid()
         ]
 
@@ -344,7 +350,7 @@ class NeuralRadianceField(torch.nn.Module):
         second_block_output = self.backbone(posn_embedding, posn_embedding)
         # first_block_output = self.first_net(posn_embedding)
         # second_block_output = self.second_net(torch.cat((posn_embedding, first_block_output)))
-        density_output = self.vol_density_activation(second_block_output)
+        density_output = self.vol_output(second_block_output)
         rgb_output = self.final_net(torch.cat((second_block_output, dir_embedding), dim=-1))
         return {'feature': rgb_output, 'density': density_output}
 
