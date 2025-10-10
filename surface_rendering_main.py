@@ -40,6 +40,8 @@ from render_functions import render_geometry
 from render_functions import render_points_with_save
 
 
+import warnings
+warnings.filterwarnings("ignore")
 # Model class containing:
 #   1) Implicit function defining the scene
 #   2) Sampling scheme which generates sample points along rays

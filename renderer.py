@@ -158,11 +158,11 @@ class SphereTracingRenderer(torch.nn.Module):
         #   indicating which points hit the surface, and which do not
         EPSILON = 1e-5
         points = origins
-        mask = torch.zeros_like((directions.shape[0], 1)).astype(torch.bool)
-        t = torch.zeros_like((directions.shape[0], 1))
+        mask = torch.zeros((directions.shape[0], 1)).bool().to(origins.device)
+        t = torch.zeros((directions.shape[0], 1)).to(origins.device)
         for i in range(self.max_iters):
             fp = implicit_fn(points)
-            mask = mask & (fp < EPSILON)
+            mask = mask | (fp < EPSILON)
             t += fp
             points = origins + t * directions
         
