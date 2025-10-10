@@ -298,8 +298,55 @@ class NeuralRadianceField(torch.nn.Module):
         embedding_dim_xyz = self.harmonic_embedding_xyz.output_dim
         embedding_dim_dir = self.harmonic_embedding_dir.output_dim
 
-        pass
+        # From NeRF paper...
+        # self.first_block = [
+        #     torch.nn.ReLU(inplace=True), 
+        #     torch.nn.Linear(embedding_dim_xyz, 256)
+        # ]
+        # for i in range(3):
+        #     self.first_block.append(torch.nn.ReLU(inplace=True))
+        #     self.first_block.append(torch.nn.Linear(256,256))
+        # self.first_block.append(torch.nn.ReLU(inplace=True))
 
+        # # concatenate xyz embedding...
+
+        # self.second_block = [
+        #     torch.nn.Linear(embedding_dim_xyz+256, 256)
+        # ]
+        # for i in range(3):
+        #     self.second_block.append(torch.nn.ReLU(inplace=True))
+        #     self.second_block.append(torch.nn.Linear(256, 256))
+        self.backbone = MLPWithInputSkips(
+            n_layers=8,
+            input_dim=embedding_dim_xyz,
+            output_dim=256,
+            skip_dim=embedding_dim_xyz,
+            hidden_dim=256,
+            input_skips={4}
+        )
+
+        # Output density. Also, concatenate and forward
+        self.vol_density_activation = torch.nn.ReLU(inplace=True)
+        self.final_block = [
+            torch.nn.Linear(embedding_dim_dir+256, 128),
+            torch.nn.Sigmoid()
+        ]
+
+        # self.first_net = torch.nn.Sequential(*self.first_block)
+        # self.second_net = torch.nn.Sequential(*self.second_block)
+        self.final_net = torch.nn.Sequential(*self.final_block)
+
+    def forward(self, ray_bundle: RayBundle):
+        x = ray_bundle.sample_points #n_rays, n_points_per_ray, 3
+        posn_embedding = self.harmonic_embedding_xyz(x)
+        dir_embedding = self.harmonic_embedding_dir(x)
+
+        second_block_output = self.backbone(posn_embedding, posn_embedding)
+        # first_block_output = self.first_net(posn_embedding)
+        # second_block_output = self.second_net(torch.cat((posn_embedding, first_block_output)))
+        density_output = self.vol_density_activation(second_block_output)
+        rgb_output = self.final_net(torch.cat((second_block_output, dir_embedding), dim=-1))
+        return {'feature': rgb_output, 'density': density_output}
 
 class NeuralSurface(torch.nn.Module):
     def __init__(
