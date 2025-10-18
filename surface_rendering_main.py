@@ -235,7 +235,9 @@ def train_points(
 
             # Get distances and enforce point cloud loss
             distances, gradients = model.implicit_fn.get_distance_and_gradient(points)
-            loss = None # TODO (Q6): Point cloud SDF loss on distances
+            # loss = None # TODO (Q6): Point cloud SDF loss on distances
+            loss = sphere_loss(distances, points, 0.0)
+
             point_loss = loss
 
             # Sample random points in bounding box

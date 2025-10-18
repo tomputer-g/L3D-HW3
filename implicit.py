@@ -298,24 +298,6 @@ class NeuralRadianceField(torch.nn.Module):
         embedding_dim_xyz = self.harmonic_embedding_xyz.output_dim
         embedding_dim_dir = self.harmonic_embedding_dir.output_dim
 
-        # From NeRF paper...
-        # self.first_block = [
-        #     torch.nn.ReLU(inplace=True), 
-        #     torch.nn.Linear(embedding_dim_xyz, 256)
-        # ]
-        # for i in range(3):
-        #     self.first_block.append(torch.nn.ReLU(inplace=True))
-        #     self.first_block.append(torch.nn.Linear(256,256))
-        # self.first_block.append(torch.nn.ReLU(inplace=True))
-
-        # # concatenate xyz embedding...
-
-        # self.second_block = [
-        #     torch.nn.Linear(embedding_dim_xyz+256, 256)
-        # ]
-        # for i in range(3):
-        #     self.second_block.append(torch.nn.ReLU(inplace=True))
-        #     self.second_block.append(torch.nn.Linear(256, 256))
         self.backbone = MLPWithInputSkips(
             n_layers=8,
             input_dim=embedding_dim_xyz,
@@ -338,8 +320,6 @@ class NeuralRadianceField(torch.nn.Module):
             torch.nn.Sigmoid()
         ]
 
-        # self.first_net = torch.nn.Sequential(*self.first_block)
-        # self.second_net = torch.nn.Sequential(*self.second_block)
         self.final_net = torch.nn.Sequential(*self.final_block)
 
     def forward(self, ray_bundle: RayBundle):
@@ -363,6 +343,35 @@ class NeuralSurface(torch.nn.Module):
         # TODO (Q6): Implement Neural Surface MLP to output per-point SDF
         # TODO (Q7): Implement Neural Surface MLP to output per-point color
 
+        self.harmonic_embedding_xyz = HarmonicEmbedding(3, cfg.n_harmonic_functions_xyz)
+
+        embedding_dim_xyz = self.harmonic_embedding_xyz.output_dim
+
+        self.backbone = MLPWithInputSkips(
+            n_layers=cfg.n_layers_distance,
+            input_dim=embedding_dim_xyz,
+            output_dim=cfg.n_hidden_neurons_distance,
+            skip_dim=embedding_dim_xyz,
+            hidden_dim=cfg.n_hidden_neurons_distance,
+            input_skips={4}
+        )
+
+        # Output density. Also, concatenate and forward #TODO not same ranges!!
+        self.dist_output = [
+            torch.nn.Linear(cfg.n_hidden_neurons_distance, 1),
+            # torch.nn.Tanh(),
+            # torch.nn.ReLU(inplace=True) #TODO add distance?
+        ]
+        self.dist_output = torch.nn.Sequential(*self.dist_output)
+        # self.final_block = [
+        #     torch.nn.Linear(embedding_dim_dir+256, 128),
+        #     torch.nn.ReLU(), #TODO not same as official
+        #     torch.nn.Linear(128, 3),
+        #     torch.nn.Sigmoid()
+        # ]
+
+        # self.final_net = torch.nn.Sequential(*self.final_block)
+
     def get_distance(
         self,
         points
@@ -373,7 +382,11 @@ class NeuralSurface(torch.nn.Module):
             distance: N X 1 Tensor, where N is number of input points
         '''
         points = points.view(-1, 3)
-        pass
+        posn_embedding = self.harmonic_embedding_xyz(points)
+
+        second_block_output = self.backbone(posn_embedding, posn_embedding)
+        distance_output = self.dist_output(second_block_output)
+        return distance_output
     
     def get_color(
         self,
