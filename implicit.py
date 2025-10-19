@@ -356,13 +356,12 @@ class NeuralSurface(torch.nn.Module):
             input_skips={4}
         )
 
-        # Output density. Also, concatenate and forward #TODO not same ranges!!
+        # Output density. Also, concatenate and forward
         self.dist_output = [
             torch.nn.Linear(cfg.n_hidden_neurons_distance, 1),
-            # torch.nn.Tanh(),
-            # torch.nn.ReLU(inplace=True) #TODO add distance?
         ]
         self.dist_output = torch.nn.Sequential(*self.dist_output)
+        
         # self.final_block = [
         #     torch.nn.Linear(embedding_dim_dir+256, 128),
         #     torch.nn.ReLU(), #TODO not same as official

@@ -78,7 +78,14 @@ Overall, we run sphere tracing for max_iters iterations. At each iteration, we t
 
 # 6. Optimizing a Neural SDF
 
-TODO
+Here is the predicted NeuralSDF for the bunny, given the input point cloud:
+
+<image src="q6/part_6_input.gif" width=256>
+<image src="q6/part_6.gif" width=256>
+
+The MLP adopts a similar architecture and uses a single MLP with input skips at the fourth layer. One major difference compared to the NeRF task was that the distance output head no longer contains an activation for nonlinearity. Since the distance is an unbounded linear output, the output head simply has a Linear layer.
+
+The eikonal loss enforces the constraint that the gradient norms are equal to one, and satisfies the eikonal constraint. To enforce this, the eikonal loss function ensures that the MSE Loss between the norm of the gradients and the value 1 is minimized, forcing the norm of the gradients to approach 1 as the loss decreases.
 
 # 7. VolSDF
 

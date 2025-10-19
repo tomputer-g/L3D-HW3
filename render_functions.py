@@ -194,7 +194,7 @@ def implicit_to_mesh(implicit_fn, scale=0.5, grid_size=128, device='cpu', color=
             sdfs[chunk_start:chunk_end] = implicit_fn.get_distance(grid[chunk_start:chunk_end,:]).view(-1)
 
         sdfs = sdfs.view(grid_size+1, grid_size+1, grid_size+1)
-
+    # print(sdfs)
     vertices, triangles = mcubes.marching_cubes(sdfs.cpu().numpy(), thresh)
     # normalize to [-scale, scale]
     vertices = (vertices/grid_size - 0.5)*2*scale
@@ -204,6 +204,7 @@ def implicit_to_mesh(implicit_fn, scale=0.5, grid_size=128, device='cpu', color=
     
     textures = torch.ones_like(vertices)  # (1, N_v, 3)
     textures = textures * torch.tensor(color)  # (1, N_v, 3)
+    # print("Vertices: " + str(vertices.shape))
     mesh = pytorch3d.structures.Meshes(
         verts=vertices,
         faces=faces,
