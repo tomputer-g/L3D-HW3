@@ -253,7 +253,12 @@ class VolumeSDFRenderer(VolumeRenderer):
 
             # Call implicit function with sample points
             distance, color = implicit_fn.get_distance_color(cur_ray_bundle.sample_points)
-            density = None # TODO (Q7): convert SDF to density
+
+            _s = -distance # s in (3) is negative of the signed distance
+            Psi_s = torch.where(_s <= 0, 0.5 * torch.exp(_s / self.beta), 1 - 0.5 * torch.exp(- _s / self.beta))
+            density = Psi_s * self.alpha
+
+            # density = None # TODO (Q7): convert SDF to density
 
             # Compute length of each ray segment
             depth_values = cur_ray_bundle.sample_lengths[..., 0]

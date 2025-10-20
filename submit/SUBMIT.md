@@ -44,7 +44,7 @@ The optimized box center is at $(0.25, 0.25, 0.00)$ and the side lengths are $(2
 
 # 3. Optimizing a Neural Radiance Field
 
-TODO take out direction (view dependence). Train and show resulting gif
+<image src="q3/part_3.gif" width=256>
 
 # 4. NeRF extras
 
@@ -89,11 +89,18 @@ The eikonal loss enforces the constraint that the gradient norms are equal to on
 
 # 7. VolSDF
 
-TODO
+TODO text
+
+<image src="q7/part_7_geometry.gif" width=256>
+<image src="q7/part_7.gif" width=256>
 
 # 8. Neural Surface Extras
 
 ## 8.1 Render Large Scene with Sphere Tracing
+
+I created a 3x3x3 grid (27 objects) of SDFs, then randomly picked each one to be either a cube, sphere, or torus. The SDFs are composed by taking the  minimum distance for all SDFs whenever the distance of a ray is requested, so that it returns the union of the objects.
+
+
 
 ## 8.2 Fewer Training Views
 

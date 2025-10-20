@@ -1,9 +1,10 @@
+from types import SimpleNamespace
 import torch
 import torch.nn.functional as F
 from torch import autograd
 
 from ray_utils import RayBundle
-
+import random
 
 # Sphere SDF class
 class SphereSDF(torch.nn.Module):
@@ -83,11 +84,58 @@ class TorusSDF(torch.nn.Module):
         )
         return (torch.linalg.norm(q, dim=-1) - self.radii[..., 1]).unsqueeze(-1)
 
+class MultiObjectSDF(torch.nn.Module):
+    def __init__(
+        self,
+        cfg
+    ):
+        super().__init__()
+        dist = 1.5
+        radius = 0.4
+        coords = [-dist, 0, dist]
+        self.sdfs = []
+        self.center = torch.tensor([0.0, 0.0, 0.0]).float().unsqueeze(0).to("cuda:0")
+        cfg = SimpleNamespace()
+        cfg.center = SimpleNamespace()
+        cfg.radii = SimpleNamespace()
+        cfg.side_lengths = SimpleNamespace()
+        for x in coords:
+            for y in coords:
+                for z in coords:
+                    choice = random.choice(['sphere', 'box', 'torus'])
+                    cfg.center.val = torch.tensor([x, y, z]).float().to("cuda:0")
+                    cfg.center.opt = False
+                    cfg.radii.val = torch.tensor([radius*1.5, radius*0.5]).float().to("cuda:0")
+                    cfg.radii.opt = False
+                    cfg.side_lengths.val = torch.tensor([radius, radius, radius]).float().to("cuda:0")  
+                    cfg.side_lengths.opt = False
+                    cfg.radius = SimpleNamespace()
+                    cfg.radius.val = torch.tensor(radius).float().to("cuda:0")
+                    cfg.radius.opt = False
+                    if choice == 'sphere':
+                        sdf = SphereSDF(cfg)
+                    elif choice == 'box':
+                        sdf = BoxSDF(cfg)
+                    else:  # torus
+                        sdf = TorusSDF(cfg)
+
+                    self.sdfs.append(sdf)
+
+    def forward(self, points):
+        min = torch.full((points.shape[0], 1), float('inf')).to(points.device)
+        for sdf in self.sdfs:
+            dist = sdf(points)
+            min = torch.minimum(min, dist)
+        return min
+
+
 sdf_dict = {
     'sphere': SphereSDF,
     'box': BoxSDF,
     'torus': TorusSDF,
+    'scene': MultiObjectSDF,
 }
+
 
 
 # Converts SDF into density/feature volume
@@ -361,15 +409,25 @@ class NeuralSurface(torch.nn.Module):
             torch.nn.Linear(cfg.n_hidden_neurons_distance, 1),
         ]
         self.dist_output = torch.nn.Sequential(*self.dist_output)
-        
-        # self.final_block = [
-        #     torch.nn.Linear(embedding_dim_dir+256, 128),
-        #     torch.nn.ReLU(), #TODO not same as official
-        #     torch.nn.Linear(128, 3),
-        #     torch.nn.Sigmoid()
-        # ]
 
-        # self.final_net = torch.nn.Sequential(*self.final_block)
+        # self.color_backbone = MLPWithInputSkips(
+        #     n_layers=cfg.n_layers_color,
+        #     input_dim=cfg.n_hidden_neurons_distance,
+        #     output_dim=3,
+        #     skip_dim=cfg.n_hidden_neurons_distance,
+        #     hidden_dim=cfg.n_hidden_neurons_color,
+        #     input_skips={}
+        # )
+        # self.color_output = torch.nn.Sigmoid()
+
+        self.final_block = [
+            torch.nn.Linear(cfg.n_hidden_neurons_distance, cfg.n_hidden_neurons_color),
+            torch.nn.ReLU(), #TODO not same as official
+            torch.nn.Linear(cfg.n_hidden_neurons_distance, 3),
+            torch.nn.Sigmoid()
+        ]
+
+        self.final_net = torch.nn.Sequential(*self.final_block)
 
     def get_distance(
         self,
@@ -397,7 +455,13 @@ class NeuralSurface(torch.nn.Module):
             distance: N X 3 Tensor, where N is number of input points
         '''
         points = points.view(-1, 3)
-        pass
+        posn_embedding = self.harmonic_embedding_xyz(points)
+
+        second_block_output = self.backbone(posn_embedding, posn_embedding)
+        # color_backbone_output = self.color_backbone(second_block_output, second_block_output)
+        # color = self.color_output(color_backbone_output)
+        color = self.final_net(second_block_output)
+        return color
     
     def get_distance_color(
         self,
@@ -410,6 +474,17 @@ class NeuralSurface(torch.nn.Module):
         You may just implement this by independent calls to get_distance, get_color
             but, depending on your MLP implementation, it maybe more efficient to share some computation
         '''
+        points = points.view(-1, 3)
+        posn_embedding = self.harmonic_embedding_xyz(points)
+
+        second_block_output = self.backbone(posn_embedding, posn_embedding)
+        distance_output = self.dist_output(second_block_output)
+        
+        # color_backbone_output = self.color_backbone(second_block_output, second_block_output)
+        # color = self.color_output(color_backbone_output)
+        color = self.final_net(second_block_output)
+
+        return distance_output, color
         
     def forward(self, points):
         return self.get_distance(points)
