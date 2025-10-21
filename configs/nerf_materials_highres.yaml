@@ -4,7 +4,7 @@ type: train_nerf
 
 training:
   num_epochs: 250
-  batch_size: 1024
+  batch_size: 512
   lr: 0.0001
 
   lr_scheduler_step_size: 50
@@ -12,7 +12,7 @@ training:
 
   checkpoint_path: ./checkpoints
   checkpoint_interval: 50
-  resume: True
+  resume: False
 
   render_interval: 10
 

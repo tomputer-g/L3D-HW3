@@ -12,9 +12,9 @@ training:
 
   checkpoint_path: ./checkpoints
   checkpoint_interval: 50
-  resume: True
+  resume: False
 
-  render_interval: 10
+  render_interval: 124
 
 data:
   image_size: [128, 128]
