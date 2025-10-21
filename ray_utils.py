@@ -91,12 +91,15 @@ def get_pixels_from_image(image_size, camera):
     #256, 256
 
     # TODO (Q1.3): Generate pixel coordinates from [0, W] in x and [0, H] in y
-    X = torch.arange(0, W).to(camera.device)
-    Y = torch.arange(0, H).to(camera.device)
+    # X = torch.arange(0, W).to(camera.device)
+    # Y = torch.arange(0, H).to(camera.device)
 
-    # TODO (Q1.3): Convert to the range [-1, 1] in both x and y
-    x = (X - W/2) / (W/2)
-    y = (Y - H/2) / (H/2)
+    # # TODO (Q1.3): Convert to the range [-1, 1] in both x and y
+    # x = (X - W/2) / (W/2)
+    # y = (Y - H/2) / (H/2)
+
+    x = torch.linspace(-1, 1, W).to(camera.device)
+    y = torch.linspace(-1, 1, H).to(camera.device)
 
     assert x.max() <= 1 and x.min() >= -1
     assert y.max() <= 1 and y.min() >= -1
