@@ -1,17 +1,24 @@
 # 0. Transmittance Calculation
 
-The base case for transmittance at y1 is T(x, y1) = 1.
+The base case for transmittance at y1 is $T(x, y1) = 1$.
 
 The inductive case is $$T(x, x_{t_i}) = T(x, x_{t_{i-1}}) e^{- \sigma_{t_{i-1}} \cdot \Delta t}$$
 
-$$T(y1, y2) = 1 \cdot  e^{-1 \cdot 2} =  e^{-2}$$
+$$T(y1, y2) = e^{-1 \cdot 2} =  e^{-2}$$
 
-$$T(y1, y3) =  e^{-2} \cdot  e^{-0.5 \cdot 1} =  e^{-2.5}$$
+$$T(y2, y3) = e^{-0.5 \cdot 1} = e^{-0.5}$$
 
-$$T(y1, y4) = e^{-2.5}\cdot e^{-10 * 3} = e^{-32.5} $$
+$$T(y3, y4) =  e^{-10 \cdot 3} = e^{-30}$$
 
+As requested:
 
-The transmittance from the source to the observer is $e^{-32.5}$.
+* $T(y1, y2) = e^{-2}$.
+
+* $T(y2, y4) = T(y2, y3) * T(y3, y4) = e^{-30.5}$.
+
+* $T(x, y4) = T(x, y1) * T(y1, y2) * T(y2, y4) = 1 \cdot e^{-2} \cdot e^{-30.5} = e^{-32.5}$.
+
+* $T(x, y3) = T(x, y1) * T(y1, y2) * T(y2, y3) = 1 \cdot e^{-2} \cdot e^{-0.5} = e^{-2.5}$.
 
 # 1. Differentiable Volume Rendering
 

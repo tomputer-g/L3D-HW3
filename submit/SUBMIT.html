@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SUBMIT.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="0-transmittance-calculation">0. Transmittance Calculation</h1>
+<p>The base case for transmittance at y1 is $T(x, y1) = 1$.</p>
+<p>The inductive case is $$T(x, x_{t_i}) = T(x, x_{t_{i-1}}) e^{- \sigma_{t_{i-1}} \cdot \Delta t}$$</p>
+<p>$$T(y1, y2) = e^{-1 \cdot 2} =  e^{-2}$$</p>
+<p>$$T(y2, y3) = e^{-0.5 \cdot 1} = e^{-0.5}$$</p>
+<p>$$T(y3, y4) =  e^{-10 \cdot 3} = e^{-30}$$</p>
+<p>As requested:</p>
+<ul>
+<li>
+<p>$T(y1, y2) = e^{-2}$.</p>
+</li>
+<li>
+<p>$T(y2, y4) = T(y2, y3) * T(y3, y4) = e^{-30.5}$.</p>
+</li>
+<li>
+<p>$T(x, y4) = T(x, y1) * T(y1, y2) * T(y2, y4) = 1 \cdot e^{-2} \cdot e^{-30.5} = e^{-32.5}$.</p>
+</li>
+<li>
+<p>$T(x, y3) = T(x, y1) * T(y1, y2) * T(y2, y3) = 1 \cdot e^{-2} \cdot e^{-0.5} = e^{-2.5}$.</p>
+</li>
+</ul>
+<h1 id="1-differentiable-volume-rendering">1. Differentiable Volume Rendering</h1>
+<h2 id="13-ray-sampling">1.3 Ray Sampling</h2>
+<p>Here are the resulting XY Grid and Rays outputs:</p>
+<p><image src="q1/xy_grid.png" width=256> <image src="q1/rays.png" width=256></p>
+<h2 id="14-point-sampling">1.4 Point Sampling</h2>
+<p>Here is the render points output that shows the point samples:</p>
+<image src="q1/sampled_pts.png" width=256>
+<h2 id="15-volume-rendering">1.5 Volume Rendering</h2>
+<p>Here is the trained spinning box:</p>
+<image src="q1/part_1.gif" width=256>
+<p>Here is the visualized depth of the box from one angle:</p>
+<image src="q1/depth.png" width=256>
+<h1 id="2-optimizing-a-basic-implicit-volume">2. Optimizing a basic implicit volume</h1>
+<h2 id="22-loss-and-training">2.2 Loss and training</h2>
+<p>The optimized box center is at $(0.25, 0.25, 0.00)$ and the side lengths are $(2.00, 1.50, 1.50)$.</p>
+<h2 id="23-visualization">2.3 Visualization</h2>
+<image src="q2/part_2.gif" width=256>
+<h1 id="3-optimizing-a-neural-radiance-field">3. Optimizing a Neural Radiance Field</h1>
+<image src="q3/part_3.gif" width=256>
+<h1 id="4-nerf-extras">4. NeRF extras</h1>
+<h2 id="41-view-dependance">4.1 View Dependance</h2>
+<p>Including view dependance allows for shinier surfaces to be modeled more accurately (such as shiny polished metal), and thus represent materials in greater fidelity compared to just modeling based on the XYZ point coordinates. However, high view dependance results in worse generalization quality. If not regularized properly, as shown in the <a href="https://arxiv.org/abs/2303.17968">VDN-NeRF paper</a>, naive neural nets tend to lose geometric details when there is high view dependance fo rthe scene.</p>
+<p>Here is the same Lego scene rendered with view dependence:</p>
+<image src="q4/part_3.gif" width=256>
+<p>Here are the Materials and High-res materials scenes:</p>
+<image src="q4/materials.gif" width=256>
+<image src="q4/materials_highres.gif" width=512>
+<h2 id="42-coarsefine-sampling">4.2 Coarse/Fine Sampling</h2>
+<p>Not Attempted.</p>
+<h1 id="5-sphere-tracing">5. Sphere Tracing</h1>
+<p>Here is the rendered torus:</p>
+<image src="q5/part_5.gif" width=256>
+<p>Here is the code snippet for my implementation:</p>
+<pre class="hljs"><code><div>EPSILON = <span class="hljs-number">1e-5</span>
+points = origins
+mask = torch.zeros((directions.shape[<span class="hljs-number">0</span>], <span class="hljs-number">1</span>)).bool().to(origins.device)
+t = torch.zeros((directions.shape[<span class="hljs-number">0</span>], <span class="hljs-number">1</span>)).to(origins.device)
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(self.max_iters):
+    fp = implicit_fn(points)
+    mask = mask | (fp &lt; EPSILON)
+    t += fp
+    points = origins + t * directions
+
+<span class="hljs-keyword">return</span> points, mask
+</div></code></pre>
+<p>Overall, we run sphere tracing for max_iters iterations. At each iteration, we take the implicit function value at the point and check if it is smaller than epsilon (effectively on the surface). If so, we set the mask to be true for that point, since it has intersected the surface. The t and points values are updated according to the lecture to increase by the radius of the sphere and take a step towards the surface. After reaching max_iters, any points with mask = false means the ray never found an intersecting surface, whereas all points with mask = true have converged at a surface.</p>
+<h1 id="6-optimizing-a-neural-sdf">6. Optimizing a Neural SDF</h1>
+<p>Here is the predicted NeuralSDF for the bunny, given the input point cloud:</p>
+<image src="q6/part_6_input.gif" width=256>
+<image src="q6/part_6.gif" width=256>
+<p>The MLP adopts a similar architecture and uses a single MLP with input skips at the fourth layer. One major difference compared to the NeRF task was that the distance output head no longer contains an activation for nonlinearity. Since the distance is an unbounded linear output, the output head simply has a Linear layer.</p>
+<p>The eikonal loss enforces the constraint that the gradient norms are equal to one, and satisfies the eikonal constraint. To enforce this, the eikonal loss function ensures that the MSE Loss between the norm of the gradients and the value 1 is minimized, forcing the norm of the gradients to approach 1 as the loss decreases.</p>
+<h1 id="7-volsdf">7. VolSDF</h1>
+<p>Alpha controls the maximum density inside the surface (since it is directly multiplied with the CDF). Larger alpha values make the interior of the object appear more opaque, and vice versa. Beta is inversely related to the exponent in the definition of the CDF controlling the behavior of the density at the edges of the surface. A smaller beta results in a larger exponentiation value, and creates a sharper transition discussed below.</p>
+<p>Beta controls the sharpness of the density transition at the edge of the SDF. A higher beta results in a softer transition which creates a blurrier edge, while a lower beta creates a sharper transition and a thinner surface. Beta in this way biases the learned SDF in creating a smoother surface when using high beta, and vice versa.</p>
+<p>A SDF is easier to train with a high beta, because the gradient at the edges are smaller and thus easier to learn and optimize against compared to a step-function-like transition that a lower beta configuration creates.</p>
+<p>However, an accurate surface requires lower beta values. The lower beta is, the stepper the transition is at the object's edge, which creates a more well-defined boundary that better approximates the sharp boundary that a true SDF would create.</p>
+<p>I wanted to experiment with beta so that the output is reasonably sharp but the edges of the object are not jagged or unstable.</p>
+<p>With a very low beta of 0.025, while the surface appears sharper, there are increasing amounts of fake detections along the side of the base platform.</p>
+<image src="q7/part_7_geometry_beta0025.gif" width=256>
+<image src="q7/part_7_beta0025.gif" width=256>
+<p>I chose to use a higher beta of 0.07, the geometry is a lot more consistent, at a slight cost of the model appearing somewhat rounded.</p>
+<image src="q7/part_7_geometry_beta007.gif" width=256>
+<image src="q7/part_7_beta007.gif" width=256>
+<h1 id="8-neural-surface-extras">8. Neural Surface Extras</h1>
+<h2 id="81-render-large-scene-with-sphere-tracing">8.1 Render Large Scene with Sphere Tracing</h2>
+<p>I created a 3x3x3 grid (27 objects) of SDFs, then randomly picked each one to be either a cube, sphere, or torus. The SDFs are composed by taking the  minimum distance for all SDFs whenever the distance of a ray is requested, so that it returns the union of the objects.</p>
+<image src="q8/part_8_1.gif" width=256>
+<h2 id="82-fewer-training-views">8.2 Fewer Training Views</h2>
+<p>The following VolSDF scene was trained using only 20 views:</p>
+<image src="q8/part_7_geometry_20view_volsdf.gif" width=256>
+<image src="q8/part_7_20view_volsdf.gif" width=256>
+<p>NeRF was not able to converge with 20 views with the default settings. I experimented with different settings and found that with 192 points per ray, NeRF does train to the below scene successfully:</p>
+<image src="q8/part_3_sparse_192ppr.gif" width=256>
+<p>We observe that the NeRF scene has significant blurring around the model, suggesting that the provided views were not enough to totally converge the learned scene.</p>
+<p>After some experimentation, the minimal amount of images for NeRF to consistently converge upon (without modifying points per ray) was around 70 images, which results in the following scene:</p>
+<image src="q8/part8_2_70views.gif" width=256>
+<p>In contrast, here is the VolSDF trained on the same 70 views:</p>
+<image src="q8/part_7_geometry_70view_volsdf.gif" width=256>
+<image src="q8/part_7_70view_volsdf.gif" width=256>
+<h2 id="83-alternate-sdf-to-density-conversions">8.3 Alternate SDF to Density Conversions</h2>
+<p>Not Attempted.</p>
+
+</body>
+</html>
