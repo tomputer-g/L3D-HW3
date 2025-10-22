@@ -30,10 +30,6 @@ Here is the visualized depth of the box from one angle:
 
 # 2. Optimizing a basic implicit volume
 
-## 2.1 Random ray sampling
-
-TODO verify what we are submitting, this was just code
-
 ## 2.2 Loss and training
 
 The optimized box center is at $(0.25, 0.25, 0.00)$ and the side lengths are $(2.00, 1.50, 1.50)$.
@@ -50,7 +46,19 @@ The optimized box center is at $(0.25, 0.25, 0.00)$ and the side lengths are $(2
 
 ## 4.1 View Dependance
 
+Adding a directional embedding based on the points allows the model to learn view dependence. Here is the same Lego scene rendered with view dependence:
+
+<image src="q4/part_3.gif" width=256>
+
+Here are the Materials and High-res materials scenes:
+
+<image src="q4/materials.gif" width=256>
+
+<image src="q4/materials_highres.gif" width=512>
+
 ## 4.2 Coarse/Fine Sampling
+
+Not Attempted.
 
 # 5. Sphere Tracing
 
@@ -100,8 +108,26 @@ TODO text
 
 I created a 3x3x3 grid (27 objects) of SDFs, then randomly picked each one to be either a cube, sphere, or torus. The SDFs are composed by taking the  minimum distance for all SDFs whenever the distance of a ray is requested, so that it returns the union of the objects.
 
-
+<image src="q8/part_8_1.gif" width=256>
 
 ## 8.2 Fewer Training Views
 
+The following VolSDF scene was trained using only 20 views:
+
+<image src="q8/part_7_geometry_20view_volsdf.gif" width=256>
+<image src="q8/part_7_20view_volsdf.gif" width=256>
+
+NeRF was not able to converge with 20 views. After some experimentation, it is evident that the minimal amount of images for NeRF to consistently converge upon was around 70 images, which results in the following scene:
+
+<image src="q8/part8_2_70views.gif" width=256>
+
+In contrast, here is the VolSDF trained on the same 70 views:
+
+
+<image src="q8/part_7_geometry_70view_volsdf.gif" width=256>
+<image src="q8/part_7_70view_volsdf.gif" width=256>
+
+
 ## 8.3 Alternate SDF to Density Conversions
+
+Not Attempted.
