@@ -22,7 +22,9 @@ Run `python3 volume_rendering_main.py --config-name=train_box`.
 
 ## Q3
 
-Go to implicit.py, line 377, and uncomment the line setting dir_embedding to a zero vector (so that it disables viewing direction info). Run `python3 volume_rendering_main.py --config-name=nerf_lego`.
+Go to implicit.py and change the network so that it uses the (256, 128) linear layer, and change rgb_output to call self.final_net with second_block_output directly (instead of concatenated features).
+
+Run `python3 volume_rendering_main.py --config-name=nerf_lego`.
 
 ## Q4
 
@@ -47,4 +49,4 @@ Run `python3 -m surface_rendering_main --config-name=volsdf_surface`.
 Run `python3 -m surface_rendering_main --config-name=scene_surface_q8_1`.
 
 ### 8.2
-Modify the code in dataset.py (around line 125) to 20 or 70 depending on part of the question. Run `python3 -m surface_rendering_main --config-name=volsdf_surface`. Run `python3 -m volume_rendering_main --config-name=nerf_lego`.
+Modify the code in dataset.py (around line 125) to the desired amount of downsampling depending on part of the question. Run `python3 -m surface_rendering_main --config-name=volsdf_surface`. Run `python3 -m volume_rendering_main --config-name=nerf_lego`.

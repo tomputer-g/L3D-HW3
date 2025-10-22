@@ -1,12 +1,15 @@
 # 0. Transmittance Calculation
 
-The base case for transmittance at y4 is T = 1.
+The base case for transmittance at y1 is T(x, y1) = 1.
 
-$$T(y4, y3) = 1 \cdot e^{-10 * 3} = e^{-30}$$
+The inductive case is $$T(x, x_{t_i}) = T(x, x_{t_{i-1}}) e^{- \sigma_{t_{i-1}} \cdot \Delta t}$$
 
-$$T(y4, y2)  = e^{-30} \cdot e^{-0.5 \cdot 1} = e^{-30.5}$$
+$$T(y1, y2) = 1 \cdot  e^{-1 \cdot 2} =  e^{-2}$$
 
-$$T(y4, y1) = T(y4, x) = e^{-30.5} \cdot e^{-1 \cdot 2} = e^{-32.5}$$
+$$T(y1, y3) =  e^{-2} \cdot  e^{-0.5 \cdot 1} =  e^{-2.5}$$
+
+$$T(y1, y4) = e^{-2.5}\cdot e^{-10 * 3} = e^{-32.5} $$
+
 
 The transmittance from the source to the observer is $e^{-32.5}$.
 
@@ -52,7 +55,9 @@ The optimized box center is at $(0.25, 0.25, 0.00)$ and the side lengths are $(2
 
 ## 4.1 View Dependance
 
-Adding a directional embedding based on the points allows the model to learn view dependence. Here is the same Lego scene rendered with view dependence:
+Including view dependance allows for shinier surfaces to be modeled more accurately (such as shiny polished metal), and thus represent materials in greater fidelity compared to just modeling based on the XYZ point coordinates. However, high view dependance results in worse generalization quality. If not regularized properly, as shown in the [VDN-NeRF paper](https://arxiv.org/abs/2303.17968), naive neural nets tend to lose geometric details when there is high view dependance fo rthe scene. 
+
+Here is the same Lego scene rendered with view dependence:
 
 <image src="q4/part_3.gif" width=256>
 
@@ -111,10 +116,18 @@ A SDF is easier to train with a high beta, because the gradient at the edges are
 
 However, an accurate surface requires lower beta values. The lower beta is, the stepper the transition is at the object's edge, which creates a more well-defined boundary that better approximates the sharp boundary that a true SDF would create.
 
-<image src="q7/part_7_geometry.gif" width=256>
-<image src="q7/part_7.gif" width=256>
+I wanted to experiment with beta so that the output is reasonably sharp but the edges of the object are not jagged or unstable.
 
-I chose TODO
+With a very low beta of 0.025, while the surface appears sharper, there are increasing amounts of fake detections along the side of the base platform.
+
+<image src="q7/part_7_geometry_beta0025.gif" width=256>
+<image src="q7/part_7_beta0025.gif" width=256>
+
+I chose to use a higher beta of 0.07, the geometry is a lot more consistent, at a slight cost of the model appearing somewhat rounded.
+
+<image src="q7/part_7_geometry_beta007.gif" width=256>
+<image src="q7/part_7_beta007.gif" width=256>
+
 
 # 8. Neural Surface Extras
 
@@ -131,12 +144,17 @@ The following VolSDF scene was trained using only 20 views:
 <image src="q8/part_7_geometry_20view_volsdf.gif" width=256>
 <image src="q8/part_7_20view_volsdf.gif" width=256>
 
-NeRF was not able to converge with 20 views. After some experimentation, it is evident that the minimal amount of images for NeRF to consistently converge upon was around 70 images, which results in the following scene:
+NeRF was not able to converge with 20 views with the default settings. I experimented with different settings and found that with 192 points per ray, NeRF does train to the below scene successfully:
+
+<image src="q8/part_3_sparse_192ppr.gif" width=256>
+
+We observe that the NeRF scene has significant blurring around the model, suggesting that the provided views were not enough to totally converge the learned scene.
+
+After some experimentation, the minimal amount of images for NeRF to consistently converge upon (without modifying points per ray) was around 70 images, which results in the following scene:
 
 <image src="q8/part8_2_70views.gif" width=256>
 
 In contrast, here is the VolSDF trained on the same 70 views:
-
 
 <image src="q8/part_7_geometry_70view_volsdf.gif" width=256>
 <image src="q8/part_7_70view_volsdf.gif" width=256>
