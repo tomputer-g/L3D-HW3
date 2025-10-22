@@ -1,8 +1,14 @@
 # 0. Transmittance Calculation
 
-TODO Submit result
+The base case for transmittance at y4 is T = 1.
 
-$$AAA$$
+$$T(y4, y3) = 1 \cdot e^{-10 * 3} = e^{-30}$$
+
+$$T(y4, y2)  = e^{-30} \cdot e^{-0.5 \cdot 1} = e^{-30.5}$$
+
+$$T(y4, y1) = T(y4, x) = e^{-30.5} \cdot e^{-1 \cdot 2} = e^{-32.5}$$
+
+The transmittance from the source to the observer is $e^{-32.5}$.
 
 # 1. Differentiable Volume Rendering
 
@@ -97,10 +103,18 @@ The eikonal loss enforces the constraint that the gradient norms are equal to on
 
 # 7. VolSDF
 
-TODO text
+Alpha controls the maximum density inside the surface (since it is directly multiplied with the CDF). Larger alpha values make the interior of the object appear more opaque, and vice versa. Beta is inversely related to the exponent in the definition of the CDF controlling the behavior of the density at the edges of the surface. A smaller beta results in a larger exponentiation value, and creates a sharper transition discussed below.
+
+Beta controls the sharpness of the density transition at the edge of the SDF. A higher beta results in a softer transition which creates a blurrier edge, while a lower beta creates a sharper transition and a thinner surface. Beta in this way biases the learned SDF in creating a smoother surface when using high beta, and vice versa.
+
+A SDF is easier to train with a high beta, because the gradient at the edges are smaller and thus easier to learn and optimize against compared to a step-function-like transition that a lower beta configuration creates.
+
+However, an accurate surface requires lower beta values. The lower beta is, the stepper the transition is at the object's edge, which creates a more well-defined boundary that better approximates the sharp boundary that a true SDF would create.
 
 <image src="q7/part_7_geometry.gif" width=256>
 <image src="q7/part_7.gif" width=256>
+
+I chose TODO
 
 # 8. Neural Surface Extras
 
